@@ -55,7 +55,7 @@ public class ServerWorker extends Thread {
                     handleLeave(tokens);
                 }
                 else {
-                    String msg = "unknown " + cmd + "\n\r";
+                    String msg = "unknown " + cmd + "\r";
                     outputStream.write(msg.getBytes());
                 }
             }
@@ -93,12 +93,12 @@ public class ServerWorker extends Thread {
         for(ServerWorker worker: workerList){
             if(isTopic){
                 if(worker.isMemberOfTopic(sendTo)){
-                    String outMsg = "msg "+sendTo+ "-" + login + ": " + body+"\n\r";
+                    String outMsg = "msg "+sendTo+ "-" + login + ": " + body+"\r";
                     worker.send(outMsg);
                 }
             }else{
             if(sendTo.equalsIgnoreCase(worker.getLogin())){
-                String outMsg = "msg "+login + ": " +body + "\n\r";
+                String outMsg = "msg "+login + ": " +body + "\r";
                 worker.send(outMsg);
             }}
         }
@@ -108,7 +108,7 @@ public class ServerWorker extends Thread {
         server.removerWorker(this);
         List<ServerWorker> workerList = server.getWorkerList();
 
-        String onlineMsg = "offline " + login + "\n\r";
+        String onlineMsg = "offline " + login + "\r";
 
         for (ServerWorker worker : workerList) {
             if (!login.equals(worker.getLogin())) {
@@ -127,7 +127,7 @@ public class ServerWorker extends Thread {
             String login = tokens[1];
             String password = tokens[2];
             if ((login.equals("b") && password.equals("b")) || (login.equals("a") && password.equals("a"))) {
-                String msg = "ok login \n\r";
+                String msg = "ok login\r";
                 outputStream.write(msg.getBytes());
                 this.login = login;
                 System.out.println("User logged in succesfully: " + login);
@@ -136,13 +136,13 @@ public class ServerWorker extends Thread {
                 for (ServerWorker worker : workerList) {
                     if (worker.getLogin()!=null) {
                         if (!login.equals(worker.getLogin())) {
-                            String msg2 = "online " + worker.getLogin() + "\n\r";
+                            String msg2 = "online " + worker.getLogin() + "\r";
                             send(msg2);
                         }
                     }
                 }
                 //send other online user's online status
-                String onlineMsg = "online " + login + "\n\r";
+                String onlineMsg = "online " + login + "\r";
 
                 for (ServerWorker worker : workerList) {
                     if (!login.equals(worker.getLogin())) {
@@ -150,7 +150,7 @@ public class ServerWorker extends Thread {
                     }
                 }
             } else {
-                String msg = "error login\n\r";
+                String msg = "error login\r";
                 outputStream.write(msg.getBytes());
             }
         }
