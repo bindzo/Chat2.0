@@ -5,9 +5,16 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import static java.sql.DriverManager.getConnection;
 
 public class ServerWorker extends Thread {
     private final Socket clientSocket;
@@ -15,6 +22,14 @@ public class ServerWorker extends Thread {
     private String login = null;
     private OutputStream outputStream;
     private HashSet<String> topicSet = new HashSet<>();
+
+    private static String DB_URL = "jdbc:mysql://localhost:3306/chat";
+    private static String USER_NAME = "root";
+    private static String PASSWORD = "1234";
+
+    private Statement statement;
+    private Connection connection;
+
     public ServerWorker(Server server, Socket clientSocket) {
         this.server = server;
         this.clientSocket = clientSocket;
@@ -41,18 +56,20 @@ public class ServerWorker extends Thread {
             String[] tokens = StringUtils.split(line);
             if (tokens != null && tokens.length > 0) {
                 String cmd = tokens[0];
-                if ("logoff".equals(cmd)||"quit".equalsIgnoreCase(cmd)) {
+                if ("logoff".equals(cmd) || "quit".equalsIgnoreCase(cmd)) {
                     handleLogoff();
                     break;
                 } else if ("login".equalsIgnoreCase(cmd)) {
                     handleLogin(outputStream, tokens);
-                } else if("msg".equals(cmd)){
-                    String[] tokensMsg = StringUtils.split(line,null,3);
+                } else if ("msg".equals(cmd)) {
+                    String[] tokensMsg = StringUtils.split(line, null, 3);
                     handleMessage(tokensMsg);
-                } else if("join".equalsIgnoreCase(cmd)){
+                } else if ("join".equalsIgnoreCase(cmd)) {
                     handleJoin(tokens);
-                }else if("leave".equalsIgnoreCase(cmd)){
+                } else if ("leave".equalsIgnoreCase(cmd)) {
                     handleLeave(tokens);
+                } else if("register".equalsIgnoreCase(cmd)){
+                    handleRegister(tokens);
                 }
                 else {
                     String msg = "unknown " + cmd + "\n";
@@ -63,19 +80,27 @@ public class ServerWorker extends Thread {
         clientSocket.close();
     }
 
+    private void handleRegister(String[] tokens) {
+        if (tokens.length == 3) {
+            String login = tokens[1];
+            String password = tokens[2];
+        }
+    }
+
     private void handleLeave(String[] tokens) {
-        if(tokens.length > 1){
-            String topic= tokens[1];
+        if (tokens.length > 1) {
+            String topic = tokens[1];
             topicSet.remove(topic);
         }
     }
 
-    public  boolean isMemberOfTopic(String topic){
+    public boolean isMemberOfTopic(String topic) {
         return topicSet.contains(topic);
     }
+
     private void handleJoin(String[] tokens) {
-        if(tokens.length > 1){
-            String topic= tokens[1];
+        if (tokens.length > 1) {
+            String topic = tokens[1];
             topicSet.add(topic);
         }
     }
@@ -90,17 +115,18 @@ public class ServerWorker extends Thread {
 
         List<ServerWorker> workerList = server.getWorkerList();
 
-        for(ServerWorker worker: workerList){
-            if(isTopic){
-                if(worker.isMemberOfTopic(sendTo)){
-                    String outMsg = "msg "+sendTo+ "-" + login + ": " + body+"\n";
+        for (ServerWorker worker : workerList) {
+            if (isTopic) {
+                if (worker.isMemberOfTopic(sendTo)) {
+                    String outMsg = "msg " + sendTo + "-" + login + ": " + body + "\n";
                     worker.send(outMsg);
                 }
-            }else{
-            if(sendTo.equalsIgnoreCase(worker.getLogin())){
-                String outMsg = "msg "+login + ": " +body + "\n";
-                worker.send(outMsg);
-            }}
+            } else {
+                if (sendTo.equalsIgnoreCase(worker.getLogin())) {
+                    String outMsg = "msg " + login + ": " + body + "\n";
+                    worker.send(outMsg);
+                }
+            }
         }
     }
 
@@ -122,26 +148,58 @@ public class ServerWorker extends Thread {
         return login;
     }
 
+    private boolean connectDB() {
+        try {
+            this.connection = getConnection(DB_URL, USER_NAME, PASSWORD);
+            this.statement = connection.createStatement();
+            return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean checkLogin(String login, String password) {
+        try {
+            if (connectDB()) {
+
+                ResultSet resultSets = this.statement.executeQuery("select * from nguoidung");
+                // show data
+                while (resultSets.next()) {
+                    if (resultSets.getString(1).equalsIgnoreCase(login) && resultSets.getString(2).equalsIgnoreCase(password)) {
+                        this.connection.close();
+                        return true;
+                    }
+                }
+                this.connection.close();
+
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
+    }
+
     private void handleLogin(OutputStream outputStream, String[] tokens) throws IOException {
         if (tokens.length == 3) {
             String login = tokens[1];
             String password = tokens[2];
-            if ((login.equals("b") && password.equals("b")) || (login.equals("a") && password.equals("a"))) {
+            if (checkLogin(login,password)) {
                 String msg = "ok login\n";
                 outputStream.write(msg.getBytes());
                 this.login = login;
                 System.out.println("User logged in succesfully: " + login);
                 List<ServerWorker> workerList = server.getWorkerList();
-                //send current user all other online login
+
                 for (ServerWorker worker : workerList) {
-                    if (worker.getLogin()!=null) {
+                    if (worker.getLogin() != null) {
                         if (!login.equals(worker.getLogin())) {
                             String msg2 = "online " + worker.getLogin() + "\n";
                             send(msg2);
                         }
                     }
                 }
-                //send other online user's online status
+
                 String onlineMsg = "online " + login + "\n";
 
                 for (ServerWorker worker : workerList) {
@@ -157,6 +215,6 @@ public class ServerWorker extends Thread {
     }
 
     private void send(String msg) throws IOException {
-            outputStream.write(msg.getBytes());
+        outputStream.write(msg.getBytes());
     }
 }

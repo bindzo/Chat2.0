@@ -11,6 +11,7 @@ public class LoginWindow extends JFrame{
     JTextField loginField = new JTextField();
     JPasswordField passwordField = new JPasswordField();
     JButton loginButton = new JButton("Login");
+    JButton registerButton = new JButton("Register");
     public LoginWindow(){
         super("Login");
 
@@ -23,6 +24,8 @@ public class LoginWindow extends JFrame{
         p.add(loginField);
         p.add(passwordField);
         p.add(loginButton);
+        p.add(registerButton);
+
 
         loginButton.addActionListener(new ActionListener() {
             @Override
@@ -30,7 +33,12 @@ public class LoginWindow extends JFrame{
                 doLogin();
             }
         });
-
+        registerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                doRegister();
+            }
+        });
         getContentPane().add(p, BorderLayout.CENTER);
 
         pack();
@@ -38,13 +46,31 @@ public class LoginWindow extends JFrame{
         setVisible(true);
     }
 
+//    private void doRegister() {
+//        String login = loginField.getText();
+//        String password =passwordField.getText();
+//
+//        try {
+//            if(client.register(login,password)){
+//                loginField.setText("");
+//                passwordField.setText("");
+//                JOptionPane.showMessageDialog(this,"Register successful");
+//
+//            }else{
+//                //show error message
+//                JOptionPane.showMessageDialog(this,"Login have already been used, please try another one");
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     private void doLogin() {
         String login = loginField.getText();
         String password =passwordField.getText();
 
         try {
             if(client.login(login,password)){
-                //bring up the user list window
                 UserListPane userListPane = new UserListPane(client);
                 JFrame frame = new JFrame("User List");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

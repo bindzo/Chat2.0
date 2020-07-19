@@ -4,7 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+
+import static java.sql.DriverManager.getConnection;
 
 public class ChatClient {
     private final String serverName;
@@ -14,8 +19,11 @@ public class ChatClient {
     private OutputStream serverOut;
     private BufferedReader bufferedIn;
 
+
+
     private ArrayList<UserStatusListener> userStatusListeners = new ArrayList<>();
     private ArrayList<MessageListener> messageListeners = new ArrayList<>();
+
 
     public ChatClient(String serverName, int serverPort) {
         this.serverName = serverName;
@@ -47,7 +55,7 @@ public class ChatClient {
             System.err.println("Connect failed.");
         } else {
             System.out.println("Connect successful");
-            if (client.login("a", "a")) {
+            if (client.login("a", "1")) {
                 System.out.println("Login successful");
                 client.msg("b", "Hello World!");
             } else {
@@ -169,4 +177,5 @@ public class ChatClient {
     public void removeMessageListener(MessageListener listener) {
         messageListeners.remove(listener);
     }
+
 }
