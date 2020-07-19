@@ -36,7 +36,7 @@ public class LoginWindow extends JFrame{
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                doRegister();
+                doRegister();
             }
         });
         getContentPane().add(p, BorderLayout.CENTER);
@@ -46,24 +46,24 @@ public class LoginWindow extends JFrame{
         setVisible(true);
     }
 
-//    private void doRegister() {
-//        String login = loginField.getText();
-//        String password =passwordField.getText();
-//
-//        try {
-//            if(client.register(login,password)){
-//                loginField.setText("");
-//                passwordField.setText("");
-//                JOptionPane.showMessageDialog(this,"Register successful");
-//
-//            }else{
-//                //show error message
-//                JOptionPane.showMessageDialog(this,"Login have already been used, please try another one");
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    private void doRegister() {
+        String login = loginField.getText();
+        String password =passwordField.getText();
+
+        try {
+            if(client.register(login,password)){
+                loginField.setText("");
+                passwordField.setText("");
+                JOptionPane.showMessageDialog(this,"Register successful");
+
+            }else{
+                //show error message
+                JOptionPane.showMessageDialog(this,"Login have been used. Please try another one!");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void doLogin() {
         String login = loginField.getText();

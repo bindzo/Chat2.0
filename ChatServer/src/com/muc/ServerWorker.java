@@ -29,6 +29,7 @@ public class ServerWorker extends Thread {
 
     private Statement statement;
     private Connection connection;
+    private ResultSet resultSets;
 
     public ServerWorker(Server server, Socket clientSocket) {
         this.server = server;
@@ -40,14 +41,14 @@ public class ServerWorker extends Thread {
     public void run() {
         try {
             handleClientSocket();
-        } catch (IOException e) {
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private void handleClientSocket() throws IOException, InterruptedException {
+    private void handleClientSocket() throws IOException, InterruptedException, SQLException {
         InputStream inputStream = clientSocket.getInputStream();
         this.outputStream = clientSocket.getOutputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -68,10 +69,9 @@ public class ServerWorker extends Thread {
                     handleJoin(tokens);
                 } else if ("leave".equalsIgnoreCase(cmd)) {
                     handleLeave(tokens);
-                } else if("register".equalsIgnoreCase(cmd)){
+                } else if ("register".equalsIgnoreCase(cmd)) {
                     handleRegister(tokens);
-                }
-                else {
+                } else {
                     String msg = "unknown " + cmd + "\n";
                     outputStream.write(msg.getBytes());
                 }
@@ -80,12 +80,6 @@ public class ServerWorker extends Thread {
         clientSocket.close();
     }
 
-    private void handleRegister(String[] tokens) {
-        if (tokens.length == 3) {
-            String login = tokens[1];
-            String password = tokens[2];
-        }
-    }
 
     private void handleLeave(String[] tokens) {
         if (tokens.length > 1) {
@@ -159,32 +153,78 @@ public class ServerWorker extends Thread {
         return false;
     }
 
-    private boolean checkLogin(String login, String password) {
-        try {
-            if (connectDB()) {
+    private boolean getLoginList() {
+        if (connectDB()) {
+            try {
+                this.resultSets = this.statement.executeQuery("select * from nguoidung");
 
-                ResultSet resultSets = this.statement.executeQuery("select * from nguoidung");
-                // show data
-                while (resultSets.next()) {
-                    if (resultSets.getString(1).equalsIgnoreCase(login) && resultSets.getString(2).equalsIgnoreCase(password)) {
-                        this.connection.close();
-                        return true;
-                    }
-                }
-                this.connection.close();
-
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+
         }
         return false;
     }
 
-    private void handleLogin(OutputStream outputStream, String[] tokens) throws IOException {
+    private boolean addLoginList(String login, String password) {
+        if (connectDB()) {
+            try {
+                this.statement.executeUpdate("INSERT INTO nguoidung(tendangnhap, matkhau) VALUES (\"" + login + "\",\"" + password + "\")");
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return false;
+    }
+
+    private boolean checkLogin(String login, String password) throws SQLException {
+        if (getLoginList()) {
+            while (resultSets.next()) {
+                if (resultSets.getString(1).equalsIgnoreCase(login) && resultSets.getString(2).equalsIgnoreCase(password)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkLoginAvailable(String login) throws SQLException {
+        if (getLoginList()) {
+            while (resultSets.next()) {
+                if (resultSets.getString(1).equalsIgnoreCase(login)) {
+
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void handleRegister(String[] tokens) throws SQLException, IOException {
         if (tokens.length == 3) {
             String login = tokens[1];
             String password = tokens[2];
-            if (checkLogin(login,password)) {
+            if (checkLoginAvailable(login) && addLoginList(login, password)) {
+
+                String msg = "ok register\n";
+                outputStream.write(msg.getBytes());
+            } else {
+                String msg = "error register\n";
+                outputStream.write(msg.getBytes());
+            }
+            this.connection.close();
+        }
+    }
+
+    private void handleLogin(OutputStream outputStream, String[] tokens) throws IOException, SQLException {
+        if (tokens.length == 3) {
+            String login = tokens[1];
+            String password = tokens[2];
+            if (checkLogin(login, password)) {
                 String msg = "ok login\n";
                 outputStream.write(msg.getBytes());
                 this.login = login;
@@ -211,6 +251,7 @@ public class ServerWorker extends Thread {
                 String msg = "error login\n";
                 outputStream.write(msg.getBytes());
             }
+            this.connection.close();
         }
     }
 
