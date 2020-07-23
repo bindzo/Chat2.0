@@ -41,9 +41,8 @@ public class ServerWorker extends Thread {
     public void run() {
         try {
             handleClientSocket();
-        } catch (IOException | SQLException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | SQLException | InterruptedException e) {
+
             e.printStackTrace();
         }
     }
@@ -66,18 +65,68 @@ public class ServerWorker extends Thread {
                     String[] tokensMsg = StringUtils.split(line, null, 3);
                     handleMessage(tokensMsg);
                 } else if ("join".equalsIgnoreCase(cmd)) {
-                    handleJoin(tokens);
+                    handleJoin(outputStream, tokens);
                 } else if ("leave".equalsIgnoreCase(cmd)) {
                     handleLeave(tokens);
                 } else if ("register".equalsIgnoreCase(cmd)) {
                     handleRegister(tokens);
-                } else {
+                } else if ("sendFileAlert".equalsIgnoreCase(cmd)) {
+                    handleSendFileAlert(tokens);
+                } else if ("sendFileConfirm".equalsIgnoreCase(cmd)) {
+                    handleFileConfirm(tokens);
+                }else if ("sendFile".equalsIgnoreCase(cmd)) {
+                    handleSendFile(tokens);
+                }
+                else {
                     String msg = "unknown " + cmd + "\n";
                     outputStream.write(msg.getBytes());
                 }
             }
         }
         clientSocket.close();
+    }
+
+    private void handleSendFile(String[] tokens) {
+        if(tokens.length>4){
+        String fileName = tokens[1];
+        String fileSize = tokens[2];
+        String sendTo = tokens[3];
+        String login = tokens[4];
+
+        }
+    }
+
+    private void handleFileConfirm(String[] tokens) throws IOException {
+        if (tokens.length > 2) {
+            String sendTo = tokens[1];
+            String isSend = tokens[2];
+            List<ServerWorker> workerList = server.getWorkerList();
+            for (ServerWorker worker : workerList) {
+                if (sendTo.equalsIgnoreCase(worker.getLogin())) {
+                    String outMsg = null;
+                    if (isSend.equalsIgnoreCase("yes")) {
+                         outMsg = "fileConfirm "+login+ " yes\n";
+                    }else{
+                        outMsg = "fileConfirm "+login+ " no\n";
+                    }
+                    worker.send(outMsg);
+                }
+            }
+        }
+    }
+
+    private void handleSendFileAlert(String[] tokens) throws IOException {
+        if (tokens.length > 2) {
+            String sendTo = tokens[1];
+            String fileName = tokens[2];
+            List<ServerWorker> workerList = server.getWorkerList();
+            for (ServerWorker worker : workerList) {
+                if (sendTo.equalsIgnoreCase(worker.getLogin())) {
+                    String outMsg = "fileAlert " + login + " " + fileName + "\n";
+                    worker.send(outMsg);
+                }
+            }
+        }
     }
 
 
@@ -92,12 +141,6 @@ public class ServerWorker extends Thread {
         return topicSet.contains(topic);
     }
 
-    private void handleJoin(String[] tokens) {
-        if (tokens.length > 1) {
-            String topic = tokens[1];
-            topicSet.add(topic);
-        }
-    }
 
     //format: "msg" "login" body...
     //format: "msg" "#topic" body...
@@ -111,8 +154,8 @@ public class ServerWorker extends Thread {
 
         for (ServerWorker worker : workerList) {
             if (isTopic) {
-                if (worker.isMemberOfTopic(sendTo)) {
-                    String outMsg = "msg " + sendTo + "-" + login + ": " + body + "\n";
+                if (worker.isMemberOfTopic(sendTo) && !worker.getLogin().equalsIgnoreCase(login)) {
+                    String outMsg = "msg " + sendTo + " - " + login + ": " + body + "\n";
                     worker.send(outMsg);
                 }
             } else {
@@ -202,6 +245,21 @@ public class ServerWorker extends Thread {
             return true;
         }
         return false;
+    }
+
+    private void handleJoin(OutputStream outputStream, String[] tokens) throws IOException {
+        if (tokens.length > 1) {
+            String topic = tokens[1];
+            topicSet.add(topic);
+            List<ServerWorker> workerList = server.getWorkerList();
+            String joinMsg = "join " + topic + "\n";
+
+            for (ServerWorker worker : workerList) {
+
+                worker.send(joinMsg);
+
+            }
+        }
     }
 
     private void handleRegister(String[] tokens) throws SQLException, IOException {

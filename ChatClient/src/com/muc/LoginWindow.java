@@ -1,5 +1,8 @@
 package com.muc;
 
+
+import com.vdurmont.emoji.EmojiParser;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,6 +15,8 @@ public class LoginWindow extends JFrame{
     JPasswordField passwordField = new JPasswordField();
     JButton loginButton = new JButton("Login");
     JButton registerButton = new JButton("Register");
+
+
     public LoginWindow(){
         super("Login");
 
@@ -49,7 +54,6 @@ public class LoginWindow extends JFrame{
     private void doRegister() {
         String login = loginField.getText();
         String password =passwordField.getText();
-
         try {
             if(client.register(login,password)){
                 loginField.setText("");
@@ -72,12 +76,7 @@ public class LoginWindow extends JFrame{
         try {
             if(client.login(login,password)){
                 UserListPane userListPane = new UserListPane(client);
-                JFrame frame = new JFrame("User List");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setSize(400,600);
-
-                frame.getContentPane().add((userListPane), BorderLayout.CENTER);
-                frame.setVisible(true);
+                userListPane.initComponents();
 
                 setVisible(false);
 
@@ -92,9 +91,9 @@ public class LoginWindow extends JFrame{
     }
 
     public static void main(String[] args) {
+
         LoginWindow loginWin = new LoginWindow();
         loginWin.setVisible(true);
-
 
     }
 }

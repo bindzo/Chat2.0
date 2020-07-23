@@ -1,5 +1,6 @@
 package com.muc;
 
+import com.vdurmont.emoji.EmojiParser;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -18,12 +19,26 @@ public class ChatClient {
     private InputStream serverIn;
     private OutputStream serverOut;
     private BufferedReader bufferedIn;
+    private String login;
 
 
+    public String getServerName() {
+        return serverName;
+    }
+
+    public int getServerPort() {
+        return serverPort;
+    }
 
     private ArrayList<UserStatusListener> userStatusListeners = new ArrayList<>();
     private ArrayList<MessageListener> messageListeners = new ArrayList<>();
+    private ArrayList<TopicUsageListener> topicUsageListeners = new ArrayList<>();
+    private ArrayList<FileAlertListener> fileAlertListeners = new ArrayList<>();
+    private ArrayList<FileConfirmListener> fileConfirmListeners = new ArrayList<>();
 
+    public String getLogin() {
+        return login;
+    }
 
     public ChatClient(String serverName, int serverPort) {
         this.serverName = serverName;
@@ -31,6 +46,7 @@ public class ChatClient {
     }
 
     public static void main(String[] args) throws IOException {
+
         ChatClient client = new ChatClient("localhost", 8818);
         client.addUserStatusListener(new UserStatusListener() {
             @Override
@@ -78,7 +94,7 @@ public class ChatClient {
     public boolean login(String login, String password) throws IOException {
         String cmd = "login " + login + " " + password + "\n";
         serverOut.write(cmd.getBytes());
-
+        this.login = login;
         String response = bufferedIn.readLine();
         System.out.println("Response Line: " + response);
         if ("ok login".equalsIgnoreCase(response)) {
@@ -87,6 +103,13 @@ public class ChatClient {
         } else
             return false;
     }
+
+    public void joinTopic(String topic) throws IOException {
+        String cmd = "join #" + topic + "\n";
+        serverOut.write(cmd.getBytes());
+
+    }
+
     public boolean register(String login, String password) throws IOException {
         String cmd = "register " + login + " " + password + "\n";
         serverOut.write(cmd.getBytes());
@@ -123,6 +146,12 @@ public class ChatClient {
                     } else if ("msg".equalsIgnoreCase(cmd)) {
                         String[] tokensMsg = StringUtils.split(line, null, 3);
                         handleMessage(tokensMsg);
+                    } else if ("join".equalsIgnoreCase(cmd)) {
+                        handleJoin(tokens);
+                    } else if ("fileAlert".equalsIgnoreCase(cmd)) {
+                        handleFileAlert(tokens);
+                    } else if ("fileConfirm".equalsIgnoreCase(cmd)) {
+                        handleFileConfirm(tokens);
                     }
                 }
             }
@@ -134,6 +163,26 @@ public class ChatClient {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void handleFileConfirm(String[] tokens) throws IOException {
+        String isSend = tokens[2];
+        String sendTo = tokens[1];
+        if (isSend.equalsIgnoreCase("yes")) {
+            for (FileConfirmListener fileConfirmListener : fileConfirmListeners) {
+                fileConfirmListener.onFileConfirm(sendTo);
+            }
+        }
+    }
+
+    private void handleFileAlert(String[] tokens) throws IOException {
+        String login = tokens[1];
+        String fileName = tokens[2];
+
+        for (FileAlertListener fileAlertListener : fileAlertListeners) {
+            fileAlertListener.onFileAlert(login, fileName);
+        }
+
     }
 
     private void handleMessage(String[] tokensMsg) {
@@ -152,11 +201,23 @@ public class ChatClient {
         }
     }
 
+    private void handleJoin(String[] tokens) {
+        String topic = tokens[1];
+        for (TopicUsageListener listener : topicUsageListeners) {
+            listener.join(topic);
+        }
+    }
+
     private void handleOnline(String[] tokens) {
         String login = tokens[1];
         for (UserStatusListener listener : userStatusListeners) {
             listener.online(login);
         }
+    }
+
+    public void sendFileAlert(String sendTo, String fileName) throws IOException {
+        String cmd = "sendFileAlert " + sendTo + " " + fileName + "\n";
+        serverOut.write(cmd.getBytes());
     }
 
     public boolean connect() {
@@ -185,8 +246,33 @@ public class ChatClient {
         messageListeners.add(listener);
     }
 
+    public void addFileAlertListener(FileAlertListener listener) {
+        fileAlertListeners.add(listener);
+    }
+    public void addFileConfirmListener(FileConfirmListener listener) {
+        fileConfirmListeners.add(listener);
+    }
     public void removeMessageListener(MessageListener listener) {
         messageListeners.remove(listener);
     }
 
+    public void joinTopicListener(TopicUsageListener listener) {
+        topicUsageListeners.add(listener);
+    }
+
+    public void leaveTopicListener(TopicUsageListener listener) {
+        topicUsageListeners.remove(listener);
+    }
+
+
+    public void sendFileConfirm(String login, boolean isSend) throws IOException {
+        String cmd = null;
+        if (isSend) {
+            cmd = "sendFileConfirm " + login + " yes\n";
+        } else {
+            cmd = "sendFileConfirm " + login + " no\n";
+        }
+        serverOut.write(cmd.getBytes());
+
+    }
 }
