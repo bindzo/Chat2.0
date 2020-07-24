@@ -172,6 +172,7 @@ public class ChatClient {
             for (FileConfirmListener fileConfirmListener : fileConfirmListeners) {
                 fileConfirmListener.onFileConfirm(sendTo);
             }
+
         }
     }
 

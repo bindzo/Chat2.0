@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="7f2ea4fc-183b-4486-abfe-f355f6a4c69a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../ChatClient/src/com/muc/ReceiveFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ChatClient/src/com/muc/ChatClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ChatClient/src/com/muc/ChatClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ChatClient/src/com/muc/MessagePane.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ChatClient/src/com/muc/MessagePane.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChatServer.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/muc/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/muc/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/muc/ServerSendFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/muc/ServerSendFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/muc/ServerWorker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/muc/ServerWorker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/ChatClient$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/ChatClient$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/ChatClient$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/ChatClient$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/ChatClient$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/ChatClient$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/ChatClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/ChatClient.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/MessagePane$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/MessagePane$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/MessagePane$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/MessagePane$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/MessagePane.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/MessagePane.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/SendFile.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/ChatClient/com/muc/SendFile.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/ChatServer/com/muc/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/ChatServer/com/muc/Server.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/ChatServer/com/muc/ServerWorker.class" beforeDir="false" afterPath="$PROJECT_DIR$/../out/production/ChatServer/com/muc/ServerWorker.class" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1f7MFJticeeMg7Mxy6nDd9DkknF" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7f2ea4fc-183b-4486-abfe-f355f6a4c69a" name="Default Changelist" comment="" />
+      <created>1595564572607</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1595564572607</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="421" y="96" key="FileChooserDialogImpl" timestamp="1595564653664">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state x="421" y="96" key="FileChooserDialogImpl/0.0.1280.680@0.0.1280.680" timestamp="1595564653664" />
+  </component>
+</project>

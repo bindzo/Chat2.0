@@ -82,13 +82,15 @@ public class MessagePane extends JPanel implements MessageListener, FileAlertLis
         int dialogResult = JOptionPane.showConfirmDialog(null, "Would You Like to Save file "+ fileName + " from "+ login, "Warning", dialogButton);
         if (dialogResult == 0) {
             this.client.sendFileConfirm(login,true);
+            ReceiveFile receiveFile = new ReceiveFile(this.client.getLogin(),login,"txt",client);
+            receiveFile.start();
         } else{
             this.client.sendFileConfirm(login,false);
         }
     }
 
     @Override
-    public void onFileConfirm(String login) throws IOException {
+    public void onFileConfirm(String login){
         SendFile sendFile = new SendFile(this.client.getLogin(),login,fileDirectory,client);
         sendFile.start();
     }

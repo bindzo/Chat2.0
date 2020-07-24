@@ -86,13 +86,13 @@ public class ServerWorker extends Thread {
         clientSocket.close();
     }
 
-    private void handleSendFile(String[] tokens) {
+    private void handleSendFile(String[] tokens) throws IOException {
         if(tokens.length>4){
         String fileName = tokens[1];
         String fileSize = tokens[2];
         String sendTo = tokens[3];
         String login = tokens[4];
-
+        this.server.acceptSendFile(login,sendTo,"txt");
         }
     }
 
@@ -106,6 +106,7 @@ public class ServerWorker extends Thread {
                     String outMsg = null;
                     if (isSend.equalsIgnoreCase("yes")) {
                          outMsg = "fileConfirm "+login+ " yes\n";
+                        this.server.acceptReceiveFile(login,sendTo,"txt");
                     }else{
                         outMsg = "fileConfirm "+login+ " no\n";
                     }
