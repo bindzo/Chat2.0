@@ -61,6 +61,7 @@ public class UserListPane extends JPanel implements UserStatusListener, TopicUsa
         try {
             this.client.logoff();
             this.setVisible(false);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -31,7 +31,6 @@ public class LoginWindow extends JFrame{
         p.add(loginButton);
         p.add(registerButton);
 
-
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

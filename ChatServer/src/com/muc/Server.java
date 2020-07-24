@@ -12,6 +12,8 @@ public class Server extends Thread {
     private ArrayList<ServerSendFile> fileList = new ArrayList<>();
 
     ServerSocket serverSocket;
+    ServerSocket newServerSocket;
+
 
     public Server(int serverPort) {
         this.serverPort = serverPort;
@@ -29,6 +31,7 @@ public class Server extends Thread {
     public void run() {
         try {
             serverSocket = new ServerSocket(serverPort);
+            newServerSocket = new ServerSocket(serverPort+1);
             while (true) {
                 System.out.println("About to accept client connection...");
                 Socket clientSocket = serverSocket.accept();
@@ -47,7 +50,7 @@ public class Server extends Thread {
     }
 
     public void acceptSendFile(String login, String sendTo, String fileName) throws IOException {
-        Socket clientFileSocket = serverSocket.accept();
+        Socket clientFileSocket = newServerSocket.accept();
 
         ServerSendFile sendFile = new ServerSendFile(login, sendTo, fileName, this, clientFileSocket);
         fileList.add(sendFile);
@@ -55,7 +58,7 @@ public class Server extends Thread {
     }
 
     public void acceptReceiveFile(String login, String sendTo, String fileName) throws IOException {
-        Socket clientFileSocket = serverSocket.accept();
+        Socket clientFileSocket = newServerSocket.accept();
         ServerSendFile receiveFile = new ServerSendFile(login, sendTo, fileName, this, clientFileSocket);
         fileList.add(receiveFile);
     }

@@ -53,9 +53,11 @@ public class ServerWorker extends Thread {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
         while ((line = reader.readLine()) != null) {
+            System.out.print(line+"-----");
             String[] tokens = StringUtils.split(line);
             if (tokens != null && tokens.length > 0) {
                 String cmd = tokens[0];
+                System.out.println(cmd);
                 if ("logoff".equals(cmd) || "quit".equalsIgnoreCase(cmd)) {
                     handleLogoff();
                     break;
@@ -88,11 +90,11 @@ public class ServerWorker extends Thread {
 
     private void handleSendFile(String[] tokens) throws IOException {
         if(tokens.length>4){
-        String fileName = tokens[1];
-        String fileSize = tokens[2];
-        String sendTo = tokens[3];
-        String login = tokens[4];
-        this.server.acceptSendFile(login,sendTo,"txt");
+            String fileName = tokens[1];
+            String fileSize = tokens[2];
+            String sendTo = tokens[3];
+            String login = tokens[4];
+            this.server.acceptSendFile(login,sendTo,"txt");
         }
     }
 
@@ -105,7 +107,7 @@ public class ServerWorker extends Thread {
                 if (sendTo.equalsIgnoreCase(worker.getLogin())) {
                     String outMsg = null;
                     if (isSend.equalsIgnoreCase("yes")) {
-                         outMsg = "fileConfirm "+login+ " yes\n";
+                        outMsg = "fileConfirm "+login+ " yes\n";
                         this.server.acceptReceiveFile(login,sendTo,"txt");
                     }else{
                         outMsg = "fileConfirm "+login+ " no\n";
