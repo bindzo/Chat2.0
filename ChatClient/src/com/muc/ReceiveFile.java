@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.Socket;
 
 public class ReceiveFile extends Thread{
+    private final String fileName;
     private Socket socket;
     private String fileDirectory;
     private String sendTo;
@@ -14,8 +15,9 @@ public class ReceiveFile extends Thread{
     private ChatClient client;
     private final int BUFFER_SIZE = 8192;
 
-    public ReceiveFile(String login, String sendTo, String fileDirectory,ChatClient client)
+    public ReceiveFile(String login, String sendTo, String fileDirectory,String fileName,ChatClient client)
     {
+        this.fileName = fileName;
         this.client = client;
         this.login = login;
         this.sendTo = sendTo;
@@ -26,10 +28,10 @@ public class ReceiveFile extends Thread{
     public void run() {
         try{
             String serverName = client.getServerName();
-            int serverPort = client.getServerPort();
+            int serverPort = client.getServerPort()+1;
             socket = new Socket(serverName,serverPort);
-
-            FileOutputStream fos = new FileOutputStream("C:\\Users\\Bin\\Desktop\\Workspace\\hello.txt");
+            String path = fileDirectory + "\\" + fileName;
+            FileOutputStream fos = new FileOutputStream(path);
             fos.flush();
             InputStream input = socket.getInputStream();
 

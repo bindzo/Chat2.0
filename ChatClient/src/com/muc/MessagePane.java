@@ -81,9 +81,18 @@ public class MessagePane extends JPanel implements MessageListener, FileAlertLis
         int dialogButton = JOptionPane.YES_NO_OPTION;
         int dialogResult = JOptionPane.showConfirmDialog(null, "Would You Like to Save file "+ fileName + " from "+ login, "Warning", dialogButton);
         if (dialogResult == 0) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            fileChooser.setDialogTitle("Choose Save Folder");
+            fileChooser.showSaveDialog(null);
+            File folder = fileChooser.getSelectedFile();
+
+            String directory = folder.toString();
+
             this.client.sendFileConfirm(login,true);
-            ReceiveFile receiveFile = new ReceiveFile(this.client.getLogin(),login,"txt",client);
+            ReceiveFile receiveFile = new ReceiveFile(this.client.getLogin(),login,directory,fileName,client);
             receiveFile.start();
+
         } else{
             this.client.sendFileConfirm(login,false);
         }

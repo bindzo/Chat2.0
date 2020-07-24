@@ -25,16 +25,17 @@ public class SendFile extends Thread{
     @Override
     public void run() {
         try{
-            String serverName = client.getServerName();
-            int serverPort = client.getServerPort();
-            socket = new Socket(serverName,serverPort);
-            serverOut = new DataOutputStream(socket.getOutputStream());
 
             File file = new File(fileDirectory);
 
             int fileLength = (int) file.length();
             int fileSize = (int)Math.ceil(fileLength / BUFFER_SIZE);
-            serverOut.writeUTF("sendFile "+ file.getName() +" "+ fileSize +" "+ sendTo +" "+ login);
+            this.client.getServerOut().write(("sendFile "+ file.getName() +" "+ fileSize +" "+ sendTo +" "+ login+"\n").getBytes());
+
+            String serverName = client.getServerName();
+            int serverPort = client.getServerPort()+1;
+            socket = new Socket(serverName,serverPort);
+            serverOut = new DataOutputStream(socket.getOutputStream());
 
             InputStream input = new FileInputStream(file);
             OutputStream output = socket.getOutputStream();
@@ -52,7 +53,6 @@ public class SendFile extends Thread{
             bis.close();
             input.close();
             output.close();
-            socket.close();
             this.socket.close();
         } catch (IOException e) {
         }

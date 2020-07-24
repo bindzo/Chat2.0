@@ -18,6 +18,11 @@ public class ChatClient {
     private Socket socket;
     private InputStream serverIn;
     private OutputStream serverOut;
+
+    public OutputStream getServerOut() {
+        return serverOut;
+    }
+
     private BufferedReader bufferedIn;
     private String login;
 
@@ -274,6 +279,5 @@ public class ChatClient {
             cmd = "sendFileConfirm " + login + " no\n";
         }
         serverOut.write(cmd.getBytes());
-
     }
 }
