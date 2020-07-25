@@ -72,8 +72,10 @@ public class MessagePane extends JPanel implements MessageListener, FileAlertLis
     @Override
     public void onMessage(String fromLogin, String msgBody) {
         msgBody = EmojiParser.parseToUnicode(msgBody);
+        if(fromLogin.equalsIgnoreCase(login+":")){
         String line = fromLogin + " " + msgBody;
         listModel.addElement(line);
+        }
     }
 
     @Override

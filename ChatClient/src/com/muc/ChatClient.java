@@ -5,12 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
-import static java.sql.DriverManager.getConnection;
 
 public class ChatClient {
     private final String serverName;
@@ -99,8 +95,11 @@ public class ChatClient {
     public boolean login(String login, String password) throws IOException {
         String cmd = "login " + login + " " + password + "\n";
         serverOut.write(cmd.getBytes());
+        String[] responseTokens = null;
+        String response = null;
         this.login = login;
-        String response = bufferedIn.readLine();
+            response = bufferedIn.readLine();
+
         System.out.println("Response Line: " + response);
         if ("ok login".equalsIgnoreCase(response)) {
             startMessageReader();
