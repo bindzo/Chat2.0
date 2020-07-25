@@ -45,7 +45,6 @@ public class ReceiveFile extends Thread{
             bIS.close();
             fos.flush();
             fos.close();
-            this.socket.close();
         } catch (IOException e) {
         }
     }

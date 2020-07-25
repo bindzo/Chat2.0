@@ -53,7 +53,6 @@ public class SendFile extends Thread{
             bis.close();
             input.close();
             output.close();
-            this.socket.close();
         } catch (IOException e) {
         }
     }

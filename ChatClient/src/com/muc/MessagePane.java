@@ -72,14 +72,17 @@ public class MessagePane extends JPanel implements MessageListener, FileAlertLis
     @Override
     public void onMessage(String fromLogin, String msgBody) {
         msgBody = EmojiParser.parseToUnicode(msgBody);
-        String line = fromLogin + " " + msgBody;
-        listModel.addElement(line);
+        if (fromLogin.equalsIgnoreCase(this.login+":f")) {
+            String line = fromLogin + " " + msgBody;
+            listModel.addElement(line);
+        }
+
     }
 
     @Override
     public void onFileAlert(String login, String fileName) throws IOException {
         int dialogButton = JOptionPane.YES_NO_OPTION;
-        int dialogResult = JOptionPane.showConfirmDialog(null, "Would You Like to Save file "+ fileName + " from "+ login, "Warning", dialogButton);
+        int dialogResult = JOptionPane.showConfirmDialog(null, "Would You Like to Save file " + fileName + " from " + login, "Warning", dialogButton);
         if (dialogResult == 0) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -89,18 +92,18 @@ public class MessagePane extends JPanel implements MessageListener, FileAlertLis
 
             String directory = folder.toString();
 
-            this.client.sendFileConfirm(login,true);
-            ReceiveFile receiveFile = new ReceiveFile(this.client.getLogin(),login,directory,fileName,client);
+            this.client.sendFileConfirm(login, true);
+            ReceiveFile receiveFile = new ReceiveFile(this.client.getLogin(), login, directory, fileName, client);
             receiveFile.start();
 
-        } else{
-            this.client.sendFileConfirm(login,false);
+        } else {
+            this.client.sendFileConfirm(login, false);
         }
     }
 
     @Override
-    public void onFileConfirm(String login){
-        SendFile sendFile = new SendFile(this.client.getLogin(),login,fileDirectory,client);
+    public void onFileConfirm(String login) {
+        SendFile sendFile = new SendFile(this.client.getLogin(), login, fileDirectory, client);
         sendFile.start();
     }
 }
